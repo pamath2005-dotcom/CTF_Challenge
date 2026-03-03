@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Level 1 - Information Exposure: Find hidden server configuration data exposed via a network request.">
+    <title>LVL_01: Information Exposure | Broken Lock CTF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../public/css/style.css">
+</head>
+
+<body>
+    <div class="scanlines"></div>
+    <div class="matrix-bg"></div>
+    <div class="glow-layer"></div>
+    <div class="container">
+        <header class="sys-header" style="margin-bottom: 1rem;">
+            <h1 style="font-size:2rem;" class="glitch" data-text="LVL_01: INFO_EXPOSURE">LVL_01: INFO_EXPOSURE</h1>
+            <a href="../public/index.html" class="cyber-btn" style="position:absolute;top:2rem;right:2rem;">[ HOME ]</a>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="level-progress-bar">
+            <div class="level-progress-fill" id="level-progress-fill" style="width:0%"></div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="level-nav">
+            <span
+                style="color: var(--border-color); border: 1px solid var(--border-color); padding: 0.4rem 0.9rem; opacity:0.4;">←
+                PREV</span>
+            <span class="nav-center">01 / 13</span>
+            <a href="level2.html">NEXT →</a>
+        </nav>
+
+        <!-- Hint Panel -->
+        <div class="hint-panel">
+            <button class="hint-toggle" id="hint-toggle-1">
+                <span>⚠ HINT_PROTOCOL // Click to reveal clues</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="hint-body" id="hint-body-1">
+                <p><strong>Vulnerability:</strong> Information Exposure / Security Misconfiguration</p>
+                <ul>
+                    <li>Click the "Load System Config" button and watch what happens in the browser network tab (F12 →
+                        Network).</li>
+                    <li>The page only displays <em>some</em> of the returned data, but the full API response is visible
+                        in the Network tab.</li>
+                    <li>Look at the raw JSON response from <code>/api/level1/config</code>.</li>
+                    <li>The flag will be inside the <code>admin_token</code> field.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="terminal-box">
+            <h3>Mission Brief</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <span class="difficulty-badge easy">EASY</span>
+                <span style="color: var(--accent-red); font-size:0.85rem;">+100 EXP</span>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                The system administrators left the server configuration exposed on the network.
+                They claim it's "security through obscurity". Check how this page loads its data —
+                not everything shown to the UI is all the data being returned.
+            </p>
+
+            <button id="fetch-data" class="cyber-btn">Load System Config</button>
+            <pre id="output"
+                style="margin-top: 1rem; color: #fff; background: #000; padding: 1rem; min-height: 50px; display: none; border: 1px solid var(--border-color);"></pre>
+        </div>
+
+        <div class="terminal-box">
+            <h3>Submit Flag</h3>
+            <form id="flag-form" data-level="1">
+                <input type="text" id="flag-input" class="cyber-input" placeholder="FLAG{...}" autocomplete="off"
+                    required>
+                <button type="submit" class="cyber-btn danger" style="width:100%;">SUBMIT_PAYLOAD</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Hidden inline script connecting to /api/level1/config -->
+    <script>
+        document.getElementById('fetch-data').addEventListener('click', () => {
+            fetch('/api/level1/config')
+                .then(res => res.json())
+                .then(data => {
+                    const outputElement = document.getElementById('output');
+                    outputElement.style.display = 'block';
+                    // We only display part of the data, the rest is "hidden" but exposed in Network tab
+                    outputElement.textContent = `[ OK ] DB_HOST: ${data.db_host}\n[ OK ] DB_USER: ${data.db_user}\n[ HIDDEN ] ADMIN_TOKEN: ********`;
+                });
+        });
+    </script>
+    <script src="../public/js/script.js"></script>
+</body>
+
+</html>

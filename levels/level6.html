@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Level 6 - IDOR: Access restricted user profiles by manipulating the user_id parameter.">
+    <title>LVL_06: IDOR | Broken Lock CTF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../public/css/style.css">
+</head>
+
+<body>
+    <div class="scanlines"></div>
+    <div class="matrix-bg"></div>
+    <div class="glow-layer"></div>
+    <div class="container">
+        <header class="sys-header" style="margin-bottom: 1rem;">
+            <h1 style="font-size:2rem;" class="glitch" data-text="LVL_06: IDOR">LVL_06: I.D.O.R</h1>
+            <a href="../public/index.html" class="cyber-btn" style="position:absolute;top:2rem;right:2rem;">[ HOME ]</a>
+        </header>
+
+        <div class="level-progress-bar">
+            <div class="level-progress-fill" id="level-progress-fill" style="width:0%"></div>
+        </div>
+
+        <nav class="level-nav">
+            <a href="level5.html">← PREV</a>
+            <span class="nav-center">06 / 13</span>
+            <a href="level7.html">NEXT →</a>
+        </nav>
+
+        <div class="hint-panel">
+            <button class="hint-toggle">
+                <span>⚠ HINT_PROTOCOL // Click to reveal clues</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="hint-body">
+                <p><strong>Vulnerability:</strong> Insecure Direct Object Reference (IDOR)</p>
+                <ul>
+                    <li>You start viewing profile ID 1 (a regular user). You are "user 1".</li>
+                    <li>There is an admin user with a different ID. The server does <strong>not</strong> verify you are
+                        authorized to view other profiles.</li>
+                    <li>Simply change the ID number in the input from <code>1</code> to <code>2</code> and click Fetch
+                        Profile.</li>
+                    <li>The admin profile's <code>private_flag</code> field contains the flag.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="terminal-box">
+            <h3>Profile Viewer</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <span class="difficulty-badge easy">EASY</span>
+                <span style="color: var(--accent-red); font-size:0.85rem;">+100 EXP</span>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                You are currently viewing user ID 1's profile. You only have permission to view your own profile.
+                But does the server actually verify that? Try accessing another user's profile...
+            </p>
+
+            <form id="idor-form">
+                <label style="color: var(--text-muted); font-size:0.9rem; display:block; margin-bottom:0.5rem;">User ID
+                    to Fetch:</label>
+                <input type="number" id="user-id" class="cyber-input" value="1" min="1" placeholder="User ID" required>
+                <button type="submit" class="cyber-btn" style="width: 100%;">FETCH PROFILE</button>
+            </form>
+
+            <pre id="output"
+                style="margin-top: 1rem; color: #fff; background: #000; padding: 1rem; min-height: 50px; display: none; border: 1px solid var(--border-color);"></pre>
+        </div>
+
+        <div class="terminal-box">
+            <h3>Submit Flag</h3>
+            <form id="flag-form" data-level="6">
+                <input type="text" id="flag-input" class="cyber-input" placeholder="FLAG{...}" autocomplete="off"
+                    required>
+                <button type="submit" class="cyber-btn danger" style="width:100%;">SUBMIT_PAYLOAD</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('idor-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('user-id').value;
+
+            fetch(`/api/level6/profile?id=${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    const out = document.getElementById('output');
+                    out.style.display = 'block';
+                    if (data.error) {
+                        out.style.color = '#ff003c';
+                        out.textContent = `[ ERROR ]: ${data.error}`;
+                    } else {
+                        out.style.color = '#00ff41';
+                        out.innerHTML = `[ NAME ]: ${data.name}\n[ BIO ]: ${data.bio}\n<span style="color: #ff00ff">[ SECRET ]: ${data.private_flag}</span>`;
+                    }
+                })
+                .catch(err => {
+                    const out = document.getElementById('output');
+                    out.style.display = 'block';
+                    out.style.color = '#ff003c';
+                    out.textContent = `[ REQUEST ERROR ]`;
+                });
+        });
+
+        // Auto-fetch profile 1 on load
+        document.getElementById('idor-form').dispatchEvent(new Event('submit'));
+    </script>
+    <script src="../public/js/script.js"></script>
+</body>
+
+</html>

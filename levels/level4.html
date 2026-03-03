@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Level 4 - SQL Injection: Exploit a vulnerable SQL query to extract all database records including the admin password.">
+    <title>LVL_04: SQL Injection | Broken Lock CTF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../public/css/style.css">
+</head>
+
+<body>
+    <div class="scanlines"></div>
+    <div class="matrix-bg"></div>
+    <div class="glow-layer"></div>
+    <div class="container">
+        <header class="sys-header" style="margin-bottom: 1rem;">
+            <h1 style="font-size:2rem;" class="glitch" data-text="LVL_04: SQL_INJECTION">LVL_04: SQL_INJECTION</h1>
+            <a href="../public/index.html" class="cyber-btn" style="position:absolute;top:2rem;right:2rem;">[ HOME ]</a>
+        </header>
+
+        <div class="level-progress-bar">
+            <div class="level-progress-fill" id="level-progress-fill" style="width:0%"></div>
+        </div>
+
+        <nav class="level-nav">
+            <a href="level3.html">← PREV</a>
+            <span class="nav-center">04 / 13</span>
+            <a href="level5.html">NEXT →</a>
+        </nav>
+
+        <div class="hint-panel">
+            <button class="hint-toggle">
+                <span>⚠ HINT_PROTOCOL // Click to reveal clues</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="hint-body">
+                <p><strong>Vulnerability:</strong> SQL Injection (In-band)</p>
+                <p>The backend query looks like: <code>SELECT * FROM users WHERE username = '[INPUT]'</code></p>
+                <ul>
+                    <li>Try typing: <code>' OR '1'='1</code> — This breaks the string and makes the condition always
+                        true.</li>
+                    <li>Or try: <code>' OR 1=1--</code> — The <code>--</code> comments out the rest of the query.</li>
+                    <li>Look for the <code>admin</code> user row — their <code>password</code> field contains the flag!
+                    </li>
+                    <li>The flag is the admin's password value in the database response.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="terminal-box">
+            <h3>Database Lookup</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <span class="difficulty-badge medium">MEDIUM</span>
+                <span style="color: var(--accent-red); font-size:0.85rem;">+100 EXP</span>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                The backend searches the database for users based on username exactly as you type it.
+                What happens if you input a string designed to break the query syntax itself?
+                Your goal: extract all users. Find the admin's password — it's the flag.
+            </p>
+
+            <form id="sqli-form">
+                <input type="text" id="username-input" class="cyber-input"
+                    placeholder="Search username (try: ' OR 1=1--)" required>
+                <button type="submit" class="cyber-btn" style="width: 100%;">QUERY DB</button>
+            </form>
+
+            <pre id="output"
+                style="margin-top: 1rem; color: #fff; background: #000; overflow-x: auto; padding: 1rem; min-height: 50px; display: none; border: 1px solid var(--border-color);"></pre>
+        </div>
+
+        <div class="terminal-box">
+            <h3>Submit Flag</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Find the admin password — it is
+                the flag.</p>
+            <form id="flag-form" data-level="4">
+                <input type="text" id="flag-input" class="cyber-input" placeholder="FLAG{...}" autocomplete="off"
+                    required>
+                <button type="submit" class="cyber-btn danger" style="width:100%;">SUBMIT_PAYLOAD</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('sqli-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username-input').value;
+
+            fetch('/api/level4/search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const out = document.getElementById('output');
+                    out.style.display = 'block';
+
+                    if (data.error) {
+                        out.style.color = '#ff003c';
+                        out.textContent = `[ SQLITE ERROR ]: \n${data.error}`;
+                    } else if (data.length === 0) {
+                        out.style.color = '#fff';
+                        out.textContent = `[ RESPONSE ]: 0 users found.`;
+                    } else {
+                        out.style.color = '#00ff41';
+                        out.textContent = `[ RESPONSE ]: \n${JSON.stringify(data, null, 2)}`;
+                    }
+                })
+                .catch(err => {
+                    const out = document.getElementById('output');
+                    out.style.display = 'block';
+                    out.style.color = '#ff003c';
+                    out.textContent = `[ FETCH ERROR ]: ${err.message}`;
+                });
+        });
+    </script>
+    <script src="../public/js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Level 13 - Security Misconfiguration: Extract sensitive data from exposed debug error endpoints.">
+    <title>LVL_13: Security Misconfiguration | Broken Lock CTF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../public/css/style.css">
+</head>
+
+<body>
+    <div class="scanlines"></div>
+    <div class="matrix-bg"></div>
+    <div class="glow-layer"></div>
+    <div class="container">
+        <header class="sys-header" style="margin-bottom: 1rem;">
+            <h1 style="font-size:2rem;" class="glitch" data-text="LVL_13: MISCONFIG">LVL_13: MISCONFIG</h1>
+            <a href="../public/index.html" class="cyber-btn" style="position:absolute;top:2rem;right:2rem;">[ HOME ]</a>
+        </header>
+
+        <div class="level-progress-bar">
+            <div class="level-progress-fill" id="level-progress-fill" style="width:0%"></div>
+        </div>
+
+        <nav class="level-nav">
+            <a href="level12.html">← PREV</a>
+            <span class="nav-center">13 / 13</span>
+            <a href="../public/index.html" style="border-color: var(--accent-red); color: var(--accent-red);">🏆
+                FINISH</a>
+        </nav>
+
+        <div class="hint-panel">
+            <button class="hint-toggle">
+                <span>⚠ HINT_PROTOCOL // Click to reveal clues</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="hint-body">
+                <p><strong>Vulnerability:</strong> Security Misconfiguration (Verbose Error Pages)</p>
+                <ul>
+                    <li>Developers sometimes leave verbose error handlers active in production environments.</li>
+                    <li>Click "TRIGGER_ERROR_DUMP()" to hit an unprotected debug endpoint
+                        (<code>/api/level13/debug-error</code>).</li>
+                    <li>The server response contains a full stack trace AND environment variable dumps.</li>
+                    <li>Scan through the output — sensitive configuration values including the flag are exposed inside
+                        the error dump.</li>
+                    <li>Look for the <code>FLAG{...}</code> pattern within the environment variable section of the
+                        output.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="terminal-box">
+            <h3>System Status Dashboard</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <span class="difficulty-badge easy">EASY</span>
+                <span style="color: var(--accent-red); font-size:0.85rem;">+100 EXP</span>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                Administrators often leave default endpoints accessible or expose debug logs in production.
+                Are there any backup endpoints or verbose error outputs that shouldn't be here?
+                Hit the debug endpoint below and read the server's error response very carefully.
+                Sensitive environment variables are leaked in the stack trace!
+            </p>
+
+            <button id="trigger-error" class="cyber-btn danger" style="width: 100%;">TRIGGER_ERROR_DUMP()</button>
+
+            <pre id="output"
+                style="margin-top: 1rem; color: #ff003c; background: #000; padding: 1rem; min-height: 50px; display: none; border: 1px solid var(--accent-red); max-height: 350px; overflow-y: auto; white-space: pre-wrap; word-break: break-all;"></pre>
+        </div>
+
+        <div class="terminal-box" style="border-color: gold; box-shadow: 0 0 20px rgba(255,215,0,0.15);">
+            <h3 style="color: gold;">🏆 Final Challenge — Submit Flag</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+                This is the last level! Find the flag hidden in the error dump above and enter it below to complete
+                Broken Lock CTF.
+            </p>
+            <form id="flag-form" data-level="13">
+                <input type="text" id="flag-input" class="cyber-input" placeholder="FLAG{...}" autocomplete="off"
+                    required style="border-color: rgba(255,215,0,0.5);">
+                <button type="submit" class="cyber-btn"
+                    style="width:100%; border-color: gold; color: gold;">SUBMIT_FINAL_PAYLOAD</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('trigger-error').addEventListener('click', () => {
+            const btn = document.getElementById('trigger-error');
+            btn.textContent = 'FETCHING...';
+            btn.disabled = true;
+
+            fetch(`/api/level13/debug-error`)
+                .then(res => res.json())
+                .then(data => {
+                    const out = document.getElementById('output');
+                    out.style.display = 'block';
+
+                    // Highlight the FLAG in the output
+                    const raw = data.stackTrace;
+                    out.innerHTML = raw.replace(/(FLAG\{[^}]+\})/g, '<span style="color:#ff00ff;font-weight:bold;background:rgba(255,0,255,0.1);">$1</span>');
+
+                    btn.textContent = 'TRIGGER_ERROR_DUMP()';
+                    btn.disabled = false;
+                })
+                .catch(err => {
+                    const out = document.getElementById('output');
+                    out.style.display = 'block';
+                    out.textContent = `[ REQUEST ERROR ]: ${err.message}`;
+                    btn.textContent = 'TRIGGER_ERROR_DUMP()';
+                    btn.disabled = false;
+                });
+        });
+    </script>
+    <script src="../public/js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Broken Lock CTF - An interactive web vulnerability learning platform covering OWASP Top 10 security risks. Solve 13 hacking challenges and master web security.">
+    <title>Broken Lock CTF - Web Vulnerability Training Platform</title>
+    <!-- Modern Tech Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="scanlines"></div>
+    <div class="matrix-bg"></div>
+    <div class="glow-layer"></div>
+
+    <div class="container">
+        <header class="sys-header">
+            <h1 class="glitch" data-text="BROKEN_LOCK_CTF">BROKEN_LOCK_CTF</h1>
+            <p class="subtitle">> SYSTEM_VULNERABILITY_TRAINING_PLATFORM</p>
+        </header>
+
+        <section class="dashboard">
+            <div class="score-card">
+                <h3>OVERALL_INTEGRITY</h3>
+                <div class="score-display">
+                    <span id="total-score" class="score-val">0</span>
+                    <span class="score-max">/ 1300</span>
+                </div>
+            </div>
+            <div style="flex: 1; padding: 0 2rem;">
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;"
+                    id="level-progress-label">0 / 13 LEVELS COMPROMISED</div>
+                <div class="level-progress-bar" style="margin: 0;">
+                    <div class="level-progress-fill" id="level-progress-fill" style="width:0%"></div>
+                </div>
+            </div>
+            <div class="sys-actions">
+                <button id="reset-btn" class="cyber-btn danger">
+                    <span class="btn-text">INITIATE_WIPE()</span>
+                </button>
+            </div>
+        </section>
+
+        <main class="grid-container" id="levels-grid">
+            <!-- Level 1 -->
+            <a href="../levels/level1.html" class="level-node" data-level="1">
+                <div class="node-header">
+                    <span class="node-id">LVL_01</span>
+                    <span class="status-indicator">PENDING..</span>
+                </div>
+                <h3 class="node-title">Information Exposure</h3>
+                <p class="node-desc">Critical system data is leaking. Inspect the surface.</p>
+                <div class="node-footer">
+                    <span class="reward">+100 EXP</span>
+                </div>
+                <div class="node-bg"></div>
+            </a>
+
+            <!-- Level 2 -->
+            <a href="../levels/level2.html" class="level-node" data-level="2">
+                <div class="node-header">
+                    <span class="node-id">LVL_02</span>
+                    <span class="status-indicator">PENDING..</span>
+                </div>
+                <h3 class="node-title">Client-Side Bypass</h3>
+                <p class="node-desc">The UI thinks it's in charge. Prove it wrong.</p>
+                <div class="node-footer">
+                    <span class="reward">+100 EXP</span>
+                </div>
+                <div class="node-bg"></div>
+            </a>
+
+            <!-- Level 3 -->
+            <a href="../levels/level3.html" class="level-node" data-level="3">
+                <div class="node-header">
+                    <span class="node-id">LVL_03</span>
+                    <span class="status-indicator">PENDING..</span>
+                </div>
+                <h3 class="node-title">Cookie Manipulation</h3>
+                <p class="node-desc">Identity is just a crumb of data. Alter the state.</p>
+                <div class="node-footer">
+                    <span class="reward">+100 EXP</span>
+                </div>
+                <div class="node-bg"></div>
+            </a>
+
+            <!-- Level 4 -->
+            <a href="../levels/level4.html" class="level-node" data-level="4">
+                <div class="node-header">
+                    <span class="node-id">LVL_04</span>
+                    <span class="status-indicator">PENDING..</span>
+                </div>
+                <h3 class="node-title">SQL Injection</h3>
+                <p class="node-desc">The database speaks a language. Force it to stutter.</p>
+                <div class="node-footer">
+                    <span class="reward">+100 EXP</span>
+                </div>
+                <div class="node-bg"></div>
+            </a>
+
+            <!-- Level 5 -->
+            <a href="../levels/level5.html" class="level-node" data-level="5">
+                <div class="node-header">
+                    <span class="node-id">LVL_05</span>
+                    <span class="status-indicator">PENDING..</span>
+                </div>
+                <h3 class="node-title">Cross-Site Scripting</h3>
+                <p class="node-desc">Inject logic to extract secrets. Beware the reflection.</p>
+                <div class="node-footer">
+                    <span class="reward">+100 EXP</span>
+                </div>
+                <div class="node-bg"></div>
+            </a>
+
+            <!-- Level 6 -->
+            <a href="../levels/level6.html" class="level-node" data-level="6">
+                <div class="node-header">
+                    <span class="node-id">LVL_06</span>
+                    <span class="status-indicator">PENDING..</span>
+                </div>
+                <h3 class="node-title">I.D.O.R</h3>
+                <p class="node-desc">Direct references imply trust. Break the trust.</p>
+                <div class="node-footer">
+                    <span class="reward">+100 EXP</span>
+                </div>
+                <div class="node-bg"></div>
+            </a>
+            <!-- Level 7 -->
+            <a href="../levels/level7.html" class="level-node" data-level="7">
+                <div class="node-header">
+                    <span class="node-id">LVL_07</span>
+                    <span class="status-indicator">PENDING..</span>
+                </div>
+                <h3 class="node-title">Path Traversal</h3>
+                <p class="node-desc">Files are hidden behind directory structures. Climb out.</p>
+                <div class="node-footer">
+                    <span class="reward">+100 EXP</span>
+                </div>
+                <div class="node-bg"></div>
+            </a>
+
+            <!-- Level 8 -->
+            <a href="../levels/level8.html" class="level-node" data-level="8">
+                <div class="node-header">
+                    <span class="node-id">LVL_08</span>
+                    <span class="status-indicator">PENDING..</span>
+                </div>
+                <h3 class="node-title">Token Tampering</h3>
+                <p class="node-desc">Identity is just encoded text. Rewrite who you are.</p>
+                <div class="node-footer">
+                    <span class="reward">+100 EXP</span>
+                </div>
+                <div class="node-bg"></div>
+            </a>
+
+            <!-- Level 9 -->
+            <a href="../levels/level9.html" class="level-node" data-level="9">
+                <div class="node-header">
+                    <span class="node-id">LVL_09</span>
+                    <span class="status-indicator">PENDING..</span>
+                </div>
+                <h3 class="node-title">Command Injection</h3>
+                <p class="node-desc">Piggyback on system execution. Add your own commands.</p>
+                <div class="node-footer">
+                    <span class="reward">+100 EXP</span>
+                </div>
+                <div class="node-bg"></div>
+            </a>
+
+            <!-- Level 10 -->
+            <a href="../levels/level10.html" class="level-node" data-level="10">
+                <div class="node-header">
+                    <span class="node-id">LVL_10</span>
+                    <span class="status-indicator">PENDING..</span>
+                </div>
+                <h3 class="node-title">Server-Side Request Forgery</h3>
+                <p class="node-desc">The server trusts itself. Make it ask for secrets.</p>
+                <div class="node-footer">
+                    <span class="reward">+100 EXP</span>
+                </div>
+                <div class="node-bg"></div>
+            </a>
+
+            <!-- Level 11 -->
+            <a href="../levels/level11.html" class="level-node" data-level="11">
+                <div class="node-header">
+                    <span class="node-id">LVL_11</span>
+                    <span class="status-indicator">PENDING..</span>
+                </div>
+                <h3 class="node-title">Cross-Site Request Forgery</h3>
+                <p class="node-desc">Changes can be forged when state requires only a session.</p>
+                <div class="node-footer">
+                    <span class="reward">+100 EXP</span>
+                </div>
+                <div class="node-bg"></div>
+            </a>
+
+            <!-- Level 12 -->
+            <a href="../levels/level12.html" class="level-node" data-level="12">
+                <div class="node-header">
+                    <span class="node-id">LVL_12</span>
+                    <span class="status-indicator">PENDING..</span>
+                </div>
+                <h3 class="node-title">XML External Entities</h3>
+                <p class="node-desc">The parser blindly trusts external references. Extract files.</p>
+                <div class="node-footer">
+                    <span class="reward">+100 EXP</span>
+                </div>
+                <div class="node-bg"></div>
+            </a>
+
+            <!-- Level 13 -->
+            <a href="../levels/level13.html" class="level-node" data-level="13">
+                <div class="node-header">
+                    <span class="node-id">LVL_13</span>
+                    <span class="status-indicator">PENDING..</span>
+                </div>
+                <h3 class="node-title">Security Misconfiguration</h3>
+                <p class="node-desc">Exposed debug outputs reveal sensitive details.</p>
+                <div class="node-footer">
+                    <span class="reward">+100 EXP</span>
+                </div>
+                <div class="node-bg"></div>
+            </a>
+        </main>
+    </div>
+
+    <!-- UI Notification System -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

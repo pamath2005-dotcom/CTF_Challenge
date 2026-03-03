@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Level 2 - Client-Side Bypass: Manipulate hidden form fields to bypass price validation.">
+    <title>LVL_02: Client-Side Bypass | Broken Lock CTF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../public/css/style.css">
+</head>
+
+<body>
+    <div class="scanlines"></div>
+    <div class="matrix-bg"></div>
+    <div class="glow-layer"></div>
+    <div class="container">
+        <header class="sys-header" style="margin-bottom: 1rem;">
+            <h1 style="font-size:2rem;" class="glitch" data-text="LVL_02: CLIENT_BYPASS">LVL_02: CLIENT_BYPASS</h1>
+            <a href="../public/index.html" class="cyber-btn" style="position:absolute;top:2rem;right:2rem;">[ HOME ]</a>
+        </header>
+
+        <div class="level-progress-bar">
+            <div class="level-progress-fill" id="level-progress-fill" style="width:0%"></div>
+        </div>
+
+        <nav class="level-nav">
+            <a href="level1.html">← PREV</a>
+            <span class="nav-center">02 / 13</span>
+            <a href="level3.html">NEXT →</a>
+        </nav>
+
+        <div class="hint-panel">
+            <button class="hint-toggle">
+                <span>⚠ HINT_PROTOCOL // Click to reveal clues</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="hint-body">
+                <p><strong>Vulnerability:</strong> Client-Side Validation Bypass</p>
+                <ul>
+                    <li>Open DevTools (F12 → Elements or Console) and find the hidden <code>&lt;input&gt;</code> fields.
+                    </li>
+                    <li>The form has a hidden input named <code>item-price</code> with value <code>500</code>.</li>
+                    <li>Change the price value to <code>0</code> or a negative number via the DevTools console or by
+                        directly editing the DOM.</li>
+                    <li>Then click "Purchase Item" — the server trusts whatever price the browser sends!</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="terminal-box">
+            <h3>Black Market Server</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <span class="difficulty-badge easy">EASY</span>
+                <span style="color: var(--accent-red); font-size:0.85rem;">+100 EXP</span>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                The market owner sells secret flags, but unfortunately, we have $0 in our bank account.
+                They seem to trust the browser to do the math for the price. The validation is entirely
+                client-side — the server blindly trusts what it receives.
+            </p>
+
+            <form id="buy-form">
+                <div
+                    style="background: rgba(255,0,0,0.05); border: 1px solid var(--accent-red); padding: 1rem; margin-bottom: 1rem;">
+                    <strong>Item Name:</strong> Admin Protocol Override <br><br>
+                    <strong>Listed Cost:</strong> <span style="color: var(--accent-red);">$500.00</span><br><br>
+
+                    <!-- VULNERABILITY: Trusting hidden client fields -->
+                    <input type="hidden" id="item-price" value="500">
+                    <input type="hidden" id="item-name" value="Admin Protocol Override">
+
+                    <button type="submit" class="cyber-btn" style="width:100%;">PURCHASE ITEM</button>
+                </div>
+            </form>
+            <pre id="output"
+                style="margin-top: 1rem; color: #fff; background: #000; padding: 1rem; min-height: 50px; display: none; border: 1px solid var(--border-color);"></pre>
+        </div>
+
+        <div class="terminal-box">
+            <h3>Submit Flag</h3>
+            <form id="flag-form" data-level="2">
+                <input type="text" id="flag-input" class="cyber-input" placeholder="FLAG{...}" autocomplete="off"
+                    required>
+                <button type="submit" class="cyber-btn danger" style="width:100%;">SUBMIT_PAYLOAD</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('buy-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const price = parseInt(document.getElementById('item-price').value);
+            const item = document.getElementById('item-name').value;
+
+            fetch('/api/level2/purchase', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ item, price })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const out = document.getElementById('output');
+                    out.style.display = 'block';
+                    if (data.success) {
+                        out.style.color = '#00ff41';
+                        out.textContent = `[ STATUS ]: ${data.message}`;
+                    } else {
+                        out.style.color = '#ff003c';
+                        out.textContent = `[ ERROR ]: ${data.message}`;
+                    }
+                });
+        });
+    </script>
+    <script src="../public/js/script.js"></script>
+</body>
+
+</html>

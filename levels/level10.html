@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Level 10 - SSRF: Force the server to make internal HTTP requests to restricted endpoints.">
+    <title>LVL_10: SSRF | Broken Lock CTF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../public/css/style.css">
+</head>
+
+<body>
+    <div class="scanlines"></div>
+    <div class="matrix-bg"></div>
+    <div class="glow-layer"></div>
+    <div class="container">
+        <header class="sys-header" style="margin-bottom: 1rem;">
+            <h1 style="font-size:2rem;" class="glitch" data-text="LVL_10: SSRF">LVL_10: S.S.R.F</h1>
+            <a href="../public/index.html" class="cyber-btn" style="position:absolute;top:2rem;right:2rem;">[ HOME ]</a>
+        </header>
+
+        <div class="level-progress-bar">
+            <div class="level-progress-fill" id="level-progress-fill" style="width:0%"></div>
+        </div>
+
+        <nav class="level-nav">
+            <a href="level9.html">← PREV</a>
+            <span class="nav-center">10 / 13</span>
+            <a href="level11.html">NEXT →</a>
+        </nav>
+
+        <div class="hint-panel">
+            <button class="hint-toggle">
+                <span>⚠ HINT_PROTOCOL // Click to reveal clues</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="hint-body">
+                <p><strong>Vulnerability:</strong> Server-Side Request Forgery (SSRF)</p>
+                <ul>
+                    <li>The server takes your URL and makes an HTTP request to it server-side.</li>
+                    <li>The internal admin API is only accessible from localhost:
+                        <code>http://127.0.0.1/admin-api</code></li>
+                    <li>Enter that URL as the target — the server will request it on your behalf, bypassing any external
+                        firewall.</li>
+                    <li>Try also: <code>http://localhost/admin-api</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="terminal-box">
+            <h3>Webhook Tester</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <span class="difficulty-badge hard">HARD</span>
+                <span style="color: var(--accent-red); font-size:0.85rem;">+100 EXP</span>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                Send a webhook payload to an external server. The server will make an HTTP request to the URL you
+                provide.
+                Is the internal network protected? Try requesting something from localhost —
+                the internal admin API at <code style="color: var(--accent-red);">http://127.0.0.1/admin-api</code> is
+                not accessible from outside, but the server can reach it!
+            </p>
+
+            <form id="webhook-form">
+                <label style="color: var(--text-muted); font-size:0.9rem; display:block; margin-bottom:0.5rem;">Target
+                    URL for server to fetch:</label>
+                <input type="text" id="target-url" class="cyber-input" value="https://example.com/webhook"
+                    placeholder="http://127.0.0.1/admin-api" required>
+                <button type="submit" class="cyber-btn" style="width: 100%;">TEST_WEBHOOK()</button>
+            </form>
+
+            <pre id="output"
+                style="margin-top: 1rem; color: #fff; background: #000; padding: 1rem; min-height: 50px; display: none; border: 1px solid var(--border-color);"></pre>
+        </div>
+
+        <div class="terminal-box">
+            <h3>Submit Flag</h3>
+            <form id="flag-form" data-level="10">
+                <input type="text" id="flag-input" class="cyber-input" placeholder="FLAG{...}" autocomplete="off"
+                    required>
+                <button type="submit" class="cyber-btn danger" style="width:100%;">SUBMIT_PAYLOAD</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('webhook-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const target_url = document.getElementById('target-url').value;
+
+            fetch(`/api/level10/webhook`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ target_url })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const out = document.getElementById('output');
+                    out.style.display = 'block';
+                    if (data.data && data.data.includes('FLAG{')) {
+                        out.style.color = '#ff00ff';
+                    } else {
+                        out.style.color = '#00ff41';
+                    }
+                    out.textContent = `[ STATUS ${data.status} ]: \n${data.data}`;
+                })
+                .catch(err => {
+                    const out = document.getElementById('output');
+                    out.style.display = 'block';
+                    out.style.color = '#ff003c';
+                    out.textContent = `[ REQUEST ERROR ]`;
+                });
+        });
+    </script>
+    <script src="../public/js/script.js"></script>
+</body>
+
+</html>

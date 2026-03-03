@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Level 5 - Cross-Site Scripting (XSS): Inject malicious scripts into a reflected input endpoint.">
+    <title>LVL_05: Cross-Site Scripting | Broken Lock CTF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../public/css/style.css">
+</head>
+
+<body>
+    <div class="scanlines"></div>
+    <div class="matrix-bg"></div>
+    <div class="glow-layer"></div>
+    <div class="container">
+        <header class="sys-header" style="margin-bottom: 1rem;">
+            <h1 style="font-size:2rem;" class="glitch" data-text="LVL_05: CROSS_SITE_SCRIPTING">LVL_05: XSS</h1>
+            <a href="../public/index.html" class="cyber-btn" style="position:absolute;top:2rem;right:2rem;">[ HOME ]</a>
+        </header>
+
+        <div class="level-progress-bar">
+            <div class="level-progress-fill" id="level-progress-fill" style="width:0%"></div>
+        </div>
+
+        <nav class="level-nav">
+            <a href="level4.html">← PREV</a>
+            <span class="nav-center">05 / 13</span>
+            <a href="level6.html">NEXT →</a>
+        </nav>
+
+        <div class="hint-panel">
+            <button class="hint-toggle">
+                <span>⚠ HINT_PROTOCOL // Click to reveal clues</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="hint-body">
+                <p><strong>Vulnerability:</strong> Reflected XSS (Cross-Site Scripting)</p>
+                <ul>
+                    <li>The server reflects the <code>name</code> parameter directly into the HTML page without
+                        sanitization.</li>
+                    <li>Try entering: <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> in the input box.</li>
+                    <li>Or try: <code>&lt;img src=x onerror="alert(document.cookie)"&gt;</code></li>
+                    <li>The generated greeting page will open in a new tab — look at the source and check for the flag
+                        message in the page body.</li>
+                    <li>The flag will be revealed in the greeting page once you successfully trigger the reflection.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="terminal-box">
+            <h3>Reflected Injection Point</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <span class="difficulty-badge medium">MEDIUM</span>
+                <span style="color: var(--accent-red); font-size:0.85rem;">+100 EXP</span>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                The server generates a greeting page reflecting exactly what you provided as the <code
+                    style="color:#00ff41">name</code> parameter in the URL.
+                Can you force it to execute an alert or JavaScript logic? The server does not sanitize the input at all.
+            </p>
+
+            <form action="/api/level5/greet" method="GET" target="_blank">
+                <input type="text" name="name" class="cyber-input" placeholder='Try: <script>alert(1)</script>'
+                    required>
+                <button type="submit" class="cyber-btn" style="width: 100%;">GENERATE GREETING (opens new tab)</button>
+            </form>
+        </div>
+
+        <div class="terminal-box">
+            <h3>Submit Flag</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Once you trigger the
+                reflection, the flag will appear in the generated page. Enter it below.</p>
+            <form id="flag-form" data-level="5">
+                <input type="text" id="flag-input" class="cyber-input" placeholder="FLAG{...}" autocomplete="off"
+                    required>
+                <button type="submit" class="cyber-btn danger" style="width:100%;">SUBMIT_PAYLOAD</button>
+            </form>
+        </div>
+    </div>
+    <script src="../public/js/script.js"></script>
+</body>
+
+</html>

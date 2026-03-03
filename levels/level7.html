@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Level 7 - Path Traversal: Navigate out of the web root by manipulating file path parameters.">
+    <title>LVL_07: Path Traversal | Broken Lock CTF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../public/css/style.css">
+</head>
+
+<body>
+    <div class="scanlines"></div>
+    <div class="matrix-bg"></div>
+    <div class="glow-layer"></div>
+    <div class="container">
+        <header class="sys-header" style="margin-bottom: 1rem;">
+            <h1 style="font-size:2rem;" class="glitch" data-text="LVL_07: PATH_TRAVERSAL">LVL_07: PATH_TRAVERSAL</h1>
+            <a href="../public/index.html" class="cyber-btn" style="position:absolute;top:2rem;right:2rem;">[ HOME ]</a>
+        </header>
+
+        <div class="level-progress-bar">
+            <div class="level-progress-fill" id="level-progress-fill" style="width:0%"></div>
+        </div>
+
+        <nav class="level-nav">
+            <a href="level6.html">← PREV</a>
+            <span class="nav-center">07 / 13</span>
+            <a href="level8.html">NEXT →</a>
+        </nav>
+
+        <div class="hint-panel">
+            <button class="hint-toggle">
+                <span>⚠ HINT_PROTOCOL // Click to reveal clues</span>
+                <span class="arrow">▼</span>
+            </button>
+            <div class="hint-body">
+                <p><strong>Vulnerability:</strong> Path Traversal / Directory Traversal</p>
+                <ul>
+                    <li>The server constructs a file path from your input and reads it. It doesn't sanitize
+                        <code>../</code> sequences.</li>
+                    <li>Try entering: <code>../secret.txt</code> or <code>../../etc/passwd</code></li>
+                    <li>The key payload that triggers the flag is any path containing <code>../</code> or
+                        <code>..\</code></li>
+                    <li>The server detects directory traversal sequences and returns the flag as the "file content".
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="terminal-box">
+            <h3>Document Reader</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <span class="difficulty-badge medium">MEDIUM</span>
+                <span style="color: var(--accent-red); font-size:0.85rem;">+100 EXP</span>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                Our secure document reader lets you load files from the server's public directory.
+                Are you sure it only loads public files? Try navigating out of the directory
+                using path traversal sequences (<code style="color:#00ff41">../</code>).
+            </p>
+
+            <form id="lfi-form">
+                <label style="color: var(--text-muted); font-size:0.9rem; display:block; margin-bottom:0.5rem;">File
+                    path to read:</label>
+                <input type="text" id="file-name" class="cyber-input" value="public-doc.txt"
+                    placeholder='Try: ../secret.txt or ../../etc/passwd' required>
+                <button type="submit" class="cyber-btn" style="width: 100%;">READ_FILE()</button>
+            </form>
+
+            <pre id="output"
+                style="margin-top: 1rem; color: #fff; background: #000; padding: 1rem; min-height: 50px; display: none; border: 1px solid var(--border-color);"></pre>
+        </div>
+
+        <div class="terminal-box">
+            <h3>Submit Flag</h3>
+            <form id="flag-form" data-level="7">
+                <input type="text" id="flag-input" class="cyber-input" placeholder="FLAG{...}" autocomplete="off"
+                    required>
+                <button type="submit" class="cyber-btn danger" style="width:100%;">SUBMIT_PAYLOAD</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('lfi-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const file = document.getElementById('file-name').value;
+
+            fetch(`/api/level7/read?file=${encodeURIComponent(file)}`)
+                .then(res => res.json())
+                .then(data => {
+                    const out = document.getElementById('output');
+                    out.style.display = 'block';
+                    if (data.error) {
+                        out.style.color = '#ff003c';
+                        out.textContent = `[ ERROR ]: ${data.error}`;
+                    } else if (data.content.includes('FLAG{')) {
+                        out.style.color = '#ff00ff';
+                        out.textContent = `[ SECRET FILE CONTENT ]: \n${data.content}`;
+                    } else {
+                        out.style.color = '#00ff41';
+                        out.textContent = `[ FILE CONTENT ]: \n${data.content}`;
+                    }
+                })
+                .catch(err => {
+                    const out = document.getElementById('output');
+                    out.style.display = 'block';
+                    out.style.color = '#ff003c';
+                    out.textContent = `[ REQUEST ERROR ]`;
+                });
+        });
+
+        // Auto-fetch default file
+        document.getElementById('lfi-form').dispatchEvent(new Event('submit'));
+    </script>
+    <script src="../public/js/script.js"></script>
+</body>
+
+</html>

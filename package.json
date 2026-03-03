@@ -1,0 +1,17 @@
+{
+  "name": "broken-lock",
+  "version": "1.0.0",
+  "description": "Web Vulnerability Learning Platform",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "author": "Cybersecurity Project",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "express-xml-bodyparser": "^0.4.1",
+    "sqlite3": "^5.1.6"
+  }
+}
